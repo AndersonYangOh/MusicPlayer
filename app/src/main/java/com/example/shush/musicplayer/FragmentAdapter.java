@@ -12,6 +12,19 @@ import java.util.List;
  */
 
 public class FragmentAdapter extends FragmentPagerAdapter {
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return "虾米音乐";
+            case 1:
+                return "QQ音乐";
+            case 2:
+                return "其他音乐";
+        }
+        return null;
+    }
+
     private List<Fragment> mFragments = new ArrayList<>();
 
     public FragmentAdapter(FragmentManager fm,List<Fragment> fragments) {
@@ -32,4 +45,6 @@ public class FragmentAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return mFragments.size();
     }
+
+
 }
