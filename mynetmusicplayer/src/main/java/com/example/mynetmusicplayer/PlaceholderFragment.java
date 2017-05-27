@@ -11,11 +11,11 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.DownloadListener;
-import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -33,20 +33,19 @@ public class PlaceholderFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-
+    static Activity MyActivity;
     public PlaceholderFragment() {
     }
 
     public PlaceholderFragment newInstance(int sectionNumber) {
         PlaceholderFragment fragment = new PlaceholderFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+//        fragment.setArguments(args);
 
         return fragment;
     }
 
-    static Activity MyActivity;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -56,7 +55,7 @@ public class PlaceholderFragment extends Fragment {
         MyActivity = getActivity();
         //webView
         //实例化WebView对象
-        WebView mWebview = (WebView) rootView.findViewById(webView);
+        final WebView mWebview = (WebView) rootView.findViewById(webView);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT);
         //设置WebView属性，能够执行Javascript脚本
@@ -74,6 +73,20 @@ public class PlaceholderFragment extends Fragment {
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
 
+            }
+        });
+
+        mWebview.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && mWebview.canGoBack()) {  //表示按返回键
+                        mWebview.goBack();   //后退
+                        //webview.goForward();//前进
+                        return true;    //已处理
+                    }
+                }
+                return false;
             }
         });
         mWebview.loadUrl("http://h.xiami.com/");
@@ -160,8 +173,8 @@ public class PlaceholderFragment extends Fragment {
                                         //System.out.println("webView返回的数据" + value);
                                         //如果value不等于空，则说明出现了J_dialogTips，即点击了下载
                                         //调用下载方法
-                                        if (value != null && songURL != null && songName !=null) {
-                                            System.out.println(songURL);
+                                        if (!value.equals("null") && songURL != null) {
+                                            //System.out.println(songURL);
                                             PlaceholderFragment placeholderFragment = new PlaceholderFragment();
                                             placeholderFragment.downSong(songURL, songName);
 
@@ -202,10 +215,3 @@ public class PlaceholderFragment extends Fragment {
 
 }
 
-final class InJavaScriptLocalObj {
-    @JavascriptInterface
-    public void execJS(String html) {
-        System.out.println(html);
-    }
-
-}
