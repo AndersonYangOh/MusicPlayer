@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-    public static WebView mWebview;
+    public  WebView mWebview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
