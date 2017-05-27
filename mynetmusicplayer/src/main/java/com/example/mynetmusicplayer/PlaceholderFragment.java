@@ -62,12 +62,9 @@ public class PlaceholderFragment extends Fragment {
         mWebview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mWebview.getSettings().setBuiltInZoomControls(true);
         mWebview.setWebViewClient(new MyWebViewClient());
-
-
         //mWebview.setWebChromeClient(new MyWebChromeClient());
 
         mWebview.loadUrl("http://h.xiami.com/");
-
         return rootView;
     }
 
@@ -78,20 +75,32 @@ public class PlaceholderFragment extends Fragment {
             return true;
         }
 
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
+        public void onPageStarted(final WebView view, String url, Bitmap favicon) {
+
+        }
+
+        @Override
+        public void onPageFinished(final WebView view, String url) {
+            //页面加载开始时去掉最上面的logo
+            view.post(new Runnable() {
+                @SuppressLint("NewApi")
+                @Override
+                public void run() {
+                    view.evaluateJavascript("javascript:document.getElementsByTagName('body')[0].removeChild(document.getElementsByClassName('navbar')[0])"
+                            , new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    System.out.println("webView返回的数据" + value);
+                                }
+                            });
+                }
+            });
         }
 
         @SuppressLint("NewApi")
         @Override
-        public WebResourceResponse shouldInterceptRequest(final WebView view, final WebResourceRequest request) {
-            //如果点击了歌曲则截获歌曲地址
-            if (request != null && request.getUrl() != null
-                    && request.getMethod().equalsIgnoreCase("get")
-                    && request.getUrl().toString().contains("http://om5.alicdn.com")) {
-                System.out.println(request.getUrl());
-            }
-
+        public WebResourceResponse shouldInterceptRequest(final WebView view,
+                                                          final WebResourceRequest request) {
             //如果点击了下载
             if (request != null && request.getUrl() != null
                     && request.getMethod().equalsIgnoreCase("get")
@@ -108,22 +117,14 @@ public class PlaceholderFragment extends Fragment {
                                         System.out.println("webView返回的数据" + value);
                                     }
                                 });
-
-//                        mWebview.evaluateJavascript("javascript:document.getElementById('J_dialogTips').innerHTML"
-//                                , new ValueCallback<String>() {
-//                                    @Override
-//                                    public void onReceiveValue(String value) {
-//                                        System.out.println("webView返回的数据" + value);
-//                                    }
-//                                });
                     }
                 });
 
             }
 
-
             return null;
         }
+
 
         @Override
         public WebResourceResponse shouldInterceptRequest(final WebView view, String url) {
