@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/MusicPlayer.iml" filepath="$PROJECT_DIR$/MusicPlayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/mynetmusicplayer/mynetmusicplayer.iml" filepath="$PROJECT_DIR$/mynetmusicplayer/mynetmusicplayer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/音乐播放器.iml" filepath="$PROJECT_DIR$/音乐播放器.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tbs/tbs.iml" filepath="$PROJECT_DIR$/tbs/tbs.iml" />
     </modules>
   </component>
 </project>
