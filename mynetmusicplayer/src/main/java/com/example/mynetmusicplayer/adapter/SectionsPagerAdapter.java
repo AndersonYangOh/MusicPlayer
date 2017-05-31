@@ -1,8 +1,10 @@
-package com.example.mynetmusicplayer;
+package com.example.mynetmusicplayer.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.example.mynetmusicplayer.PlaceholderFragment;
 
 /**
  * Created by shush on 2017/5/25.
@@ -37,7 +39,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return "QQ音乐";
             case 2:
-                return "其他音乐";
+                return "网易云音乐";
         }
         return null;
     }

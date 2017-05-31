@@ -1,4 +1,4 @@
-package com.example.mynetmusicplayer;
+package com.example.mynetmusicplayer.utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Created by shush on 2017/5/25.
  */
 
-public class MyLog    //静态类
+public class MyLog
 {
     public static void getLog() {
         try {

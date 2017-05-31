@@ -6,6 +6,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.example.mynetmusicplayer.adapter.SectionsPagerAdapter;
+
 import static com.example.mynetmusicplayer.R.id.container;
 
 public class MainActivity extends AppCompatActivity {

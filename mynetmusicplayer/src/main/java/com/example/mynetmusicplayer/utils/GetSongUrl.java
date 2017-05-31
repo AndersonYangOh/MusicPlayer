@@ -1,4 +1,4 @@
-package com.example.mynetmusicplayer;
+package com.example.mynetmusicplayer.utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
