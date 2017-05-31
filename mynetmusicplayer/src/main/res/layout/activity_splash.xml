@@ -12,7 +12,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/my1"
+        android:src="@drawable/my"
         app:civ_border_width="0dp" />
     <TextView
         android:text="网络播放器 by shush"
