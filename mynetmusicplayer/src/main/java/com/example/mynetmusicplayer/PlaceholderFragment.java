@@ -1,8 +1,6 @@
 package com.example.mynetmusicplayer;
 
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -14,7 +12,8 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 
-import static android.content.Context.DOWNLOAD_SERVICE;
+import com.example.mynetmusicplayer.utils.Song;
+
 import static com.example.mynetmusicplayer.R.id.webView;
 
 public class PlaceholderFragment extends Fragment {
@@ -24,7 +23,7 @@ public class PlaceholderFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    static Activity MyActivity;
+    static Activity mainActivity;
     WebView mWebview;
     public PlaceholderFragment() {
     }
@@ -44,7 +43,7 @@ public class PlaceholderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        MyActivity = getActivity();
+        mainActivity = getActivity();
 
 
         //webView
@@ -82,7 +81,6 @@ public class PlaceholderFragment extends Fragment {
                 break;
             case 2:
                 mWebview.loadUrl("http://music.163.com/m");
-
                 mWebview.setWebViewClient(new WebViewClientNTES());
                 break;
         }
@@ -90,18 +88,10 @@ public class PlaceholderFragment extends Fragment {
     }
 
     public void downSong(String songURL, String songName) {
+        Song song = new Song();
+        song.downSong(mainActivity,songURL,songName);
 
-        DownloadManager downloadManager = (DownloadManager) MyActivity.getSystemService(DOWNLOAD_SERVICE);
-        String apkUrl = songURL;
-        DownloadManager.Request request = new
-                DownloadManager.Request(Uri.parse(apkUrl));
-
-        request.setTitle(songName + ".mp3");
-        request.setMimeType("audio/mpeg");
-        request.allowScanningByMediaScanner();
-        long downloadId = downloadManager.enqueue(request);
     }
-
 
 }
 

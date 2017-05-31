@@ -24,7 +24,7 @@ public class LocalPlay extends AppCompatActivity {
 
         ContentResolver contentResolver = getContentResolver();
         Uri uri = MediaStore.Audio.Media.INTERNAL_CONTENT_URI;
-        Cursor cursor = contentResolver.query(uri, null, null, null, null);
+        Cursor cursor = contentResolver.query(uri,null,null,null,MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
 
         String url = "";
         if (cursor == null) {

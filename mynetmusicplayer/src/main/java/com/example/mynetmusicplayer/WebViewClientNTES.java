@@ -19,7 +19,6 @@ import java.io.UnsupportedEncodingException;
 public class WebViewClientNTES extends WebViewClient {
     private static String songURL;
     private static String songName;
-
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         view.loadUrl(url);
         return true;
@@ -31,6 +30,7 @@ public class WebViewClientNTES extends WebViewClient {
 
     @Override
     public void onPageFinished(final WebView view, String url) {
+
         view.post(new Runnable() {
             @SuppressLint("NewApi")
             @Override
