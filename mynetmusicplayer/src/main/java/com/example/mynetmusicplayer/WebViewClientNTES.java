@@ -16,7 +16,7 @@ import java.io.UnsupportedEncodingException;
  * Created by shush on 2017/5/31.
  */
 
-public   class XiamiWebViewClient extends WebViewClient {
+public class WebViewClientNTES extends WebViewClient {
     private static String songURL;
     private static String songName;
 
@@ -36,9 +36,9 @@ public   class XiamiWebViewClient extends WebViewClient {
             @Override
             public void run() {
                 //页面加载结束后 去掉一些div
-                view.evaluateJavascript("javascript:document.getElementsByTagName('body')[0].removeChild(document.getElementsByClassName('navbar')[0])"
+                view.evaluateJavascript("javascript:document.getElementsByClassName('topfix')[0].removeChild(document.getElementsByClassName('topfr')[0])"
                         , null);
-                view.evaluateJavascript("javascript:document.getElementsByTagName('section')[0].removeChild(document.getElementById('J_Slide'))"
+                view.evaluateJavascript("javascript:document.getElementsByClassName('m-homeremd')[0].removeChild(document.getElementsByClassName('m-homeft')[0])"
                         , null);
             }
         });
@@ -52,7 +52,7 @@ public   class XiamiWebViewClient extends WebViewClient {
         //获取歌曲url
         if (request != null && request.getUrl() != null
                 && request.getMethod().equalsIgnoreCase("get")
-                && request.getUrl().toString().contains("om5.alicdn.com")) {
+                && request.getUrl().toString().contains("m10.music.126.net")) {
             songURL = request.getUrl().toString();
             view.post(new Runnable() {
                 @Override
@@ -68,6 +68,8 @@ public   class XiamiWebViewClient extends WebViewClient {
 
                                 }
                             });
+                    view.evaluateJavascript("javascript:document.getElementsByClassName('u-footer-wrap')[0].removeChild(document.getElementsByClassName('u-btn u-btn-hollow u-btn-block u-btn-red')[0])"
+                            , null);
                 }
             });
         }
@@ -106,7 +108,9 @@ public   class XiamiWebViewClient extends WebViewClient {
     @Override
     public WebResourceResponse shouldInterceptRequest(final WebView view, String url) {
         if (!TextUtils.isEmpty(url) && Uri.parse(url).getScheme() != null
-                && url.contains("http://om5.alicdn.com")) {
+                && url.contains("m10.music.126.net")) {
+
+
             songURL = url;
             view.post(new Runnable() {
                 @Override
@@ -129,6 +133,9 @@ public   class XiamiWebViewClient extends WebViewClient {
 
                                 }
                             });
+                    view.evaluateJavascript("javascript:document.getElementsByClassName('u-footer-wrap')[0].removeChild(document.getElementsByClassName('u-btn u-btn-hollow u-btn-block u-btn-red')[0])"
+                            , null);
+
                 }
             });
         }

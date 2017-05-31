@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimary"
     tools:context="com.example.mynetmusicplayer.SplashActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -14,7 +13,7 @@
         android:layout_height="200dp"
         android:layout_centerInParent="true"
         android:src="@drawable/my1"
-        app:civ_border_width="2dp" />
+        app:civ_border_width="0dp" />
     <TextView
         android:text="网络播放器 by shush"
         android:textSize="30sp"

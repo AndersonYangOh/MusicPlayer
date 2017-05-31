@@ -58,15 +58,6 @@ public class PlaceholderFragment extends Fragment {
         mWebview.getSettings().setLoadWithOverviewMode(true);
         mWebview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
-//        mWebview.setDownloadListener(new DownloadListener() {
-//            @Override
-//            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-//                Uri uri = Uri.parse(url);
-//                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-//                startActivity(intent);
-//
-//            }
-//        });
         mWebview.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -83,16 +74,16 @@ public class PlaceholderFragment extends Fragment {
         switch (getArguments().getInt(ARG_SECTION_NUMBER,0)){
             case 0:
                 mWebview.loadUrl("http://h.xiami.com");
-                mWebview.setWebViewClient(new XiamiWebViewClient());
+                mWebview.setWebViewClient(new WebViewClientXiami());
                 break;
             case 1:
                 mWebview.loadUrl("https://m.y.qq.com");
-                mWebview.setWebViewClient(new QQWebViewClient());
+                mWebview.setWebViewClient(new WebViewClientQQ());
                 break;
             case 2:
                 mWebview.loadUrl("http://music.163.com/m");
 
-                mWebview.setWebViewClient(new NTESWebViewClient());
+                mWebview.setWebViewClient(new WebViewClientNTES());
                 break;
         }
         return rootView;

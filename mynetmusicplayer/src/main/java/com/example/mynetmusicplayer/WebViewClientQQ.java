@@ -16,7 +16,7 @@ import java.io.UnsupportedEncodingException;
  * Created by shush on 2017/5/31.
  */
 
-public class QQWebViewClient extends WebViewClient {
+public class WebViewClientQQ extends WebViewClient {
     private static String songURL;
     private static String songName;
 
