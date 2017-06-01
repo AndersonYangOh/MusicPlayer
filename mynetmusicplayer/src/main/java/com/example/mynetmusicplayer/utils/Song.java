@@ -3,6 +3,7 @@ package com.example.mynetmusicplayer.utils;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
 
 /**
  * Created by shush on 2017/5/31.
@@ -70,8 +71,8 @@ public class Song {
         DownloadManager downloadManager  =  (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         String apkUrl = songURL;
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(apkUrl));
-
-        request.setTitle(songName + ".mp3");
+        request.setTitle(songName);
+        request.setDestinationInExternalPublicDir( Environment.DIRECTORY_MUSIC,songName+".mp3");
         request.setMimeType("audio/mpeg");
         request.allowScanningByMediaScanner();
         long downloadId = downloadManager.enqueue(request);

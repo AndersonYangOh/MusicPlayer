@@ -130,7 +130,6 @@ public class WebViewClientQQ extends WebViewClient {
 
         //如果点击了下载
         if (url != null && url.contains("androidqqmusic://form=webpage")) {
-            url = null;
             view.post(new Runnable() {
                 @Override
                 public void run() {
