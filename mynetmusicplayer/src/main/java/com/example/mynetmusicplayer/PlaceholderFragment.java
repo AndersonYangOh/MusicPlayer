@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.mynetmusicplayer.utils.Song;
 
@@ -90,7 +91,7 @@ public class PlaceholderFragment extends Fragment {
     public void downSong(String songURL, String songName) {
         Song song = new Song();
         song.downSong(mainActivity,songURL,songName);
-
+        Toast.makeText(mainActivity, songName+"正在下载", Toast.LENGTH_SHORT).show();
     }
 
 }

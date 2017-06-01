@@ -1,63 +1,103 @@
 package com.example.mynetmusicplayer;
 
+import android.Manifest;
 import android.content.ContentResolver;
-import android.content.ContentUris;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
-import java.io.IOException;
+import com.example.mynetmusicplayer.utils.Song;
 
-import static android.R.attr.id;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class LocalPlay extends AppCompatActivity {
     MediaPlayer mMediaPlayer;
+    SimpleAdapter mAdapter;
+    ListView mMusicList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_play);
+        mMusicList= (ListView) findViewById(R.id.music_list);
 
+        //运行时申请权限
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        }else{
+            List<Song> songList = getSongList();
+            setListAdapter(songList);
+        }
+
+    }
+
+    public List<Song> getSongList() {
         ContentResolver contentResolver = getContentResolver();
-        Uri uri = MediaStore.Audio.Media.INTERNAL_CONTENT_URI;
-        Cursor cursor = contentResolver.query(uri,null,null,null,MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor cursor = contentResolver.query(uri, null, null, null, null);
 
-        String url = "";
-        if (cursor == null) {
-            Log.i("LocalPlay", "null ");
-        } else if (!cursor.moveToFirst()) {
-            Log.i("LocalPlay", "no media ");
-        } else {
-            int titleColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-            int idColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
-            url = cursor.getString(cursor
-                    .getColumnIndex(MediaStore.Audio.Media.DATA));
-            do {
-                long thisId  = cursor.getLong(idColumn);
-                String thisTitle = cursor.getString(titleColumn);
-                Log.i("LocalPlay","thisId:"+thisId+"thisTitle"+thisTitle);
-            } while (cursor.moveToNext());
+        List<Song> songList = new ArrayList<>();
+        for (int i = 0; i < cursor.getCount(); i++) {
+            Song song = new Song();
+            cursor.moveToFirst();
+            long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+            String title = cursor.getString((cursor
+                    .getColumnIndex(MediaStore.Audio.Media.TITLE)));//音乐标题
+            String artist = cursor.getString(cursor
+                    .getColumnIndex(MediaStore.Audio.Media.ARTIST));//艺术家
+            long duration = cursor.getLong(cursor
+                    .getColumnIndex(MediaStore.Audio.Media.DURATION));//时长
+            long size = cursor.getLong(cursor
+                    .getColumnIndex(MediaStore.Audio.Media.SIZE));  //文件大小
+            String url = cursor.getString(cursor
+                    .getColumnIndex(MediaStore.Audio.Media.DATA));   //文件路径
+
+            int isMusic = cursor.getInt(cursor
+                    .getColumnIndex(MediaStore.Audio.Media.IS_MUSIC));//是否为音乐
+
+            if (isMusic != 0 || true) {
+                song.setSongTitle(title);
+                song.setSongID(id);
+                song.setArtist(artist);
+                song.setDuration(duration);
+                song.setSize(size);
+                song.setUrl(url);
+                songList.add(song);
+
+            }
         }
+        return songList;
+    }
 
-        Uri contentUri = ContentUris.withAppendedId(
-                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
-
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-        try {
-            mMediaPlayer.setDataSource(url);
-            mMediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void setListAdapter(List<Song> mp3Infos) {
+        List<HashMap<String, String>> mp3list = new ArrayList<>();
+        for (Iterator iterator = mp3Infos.iterator(); iterator.hasNext(); ) {
+            Song mp3Info = (Song) iterator.next();
+            HashMap<String, String> map = new HashMap<>();
+            map.put("title", mp3Info.getSongTitle());
+            map.put("artist", mp3Info.getArtist());
+            map.put("duration", String.valueOf(mp3Info.getDuration()));
+            map.put("size", String.valueOf(mp3Info.getSize()));
+            map.put("url", mp3Info.getUrl());
+            mp3list.add(map);
         }
-        mMediaPlayer.start();
-
-
-
+        mAdapter = new SimpleAdapter(this, mp3list,
+                R.layout.music_list_item, new String[]{"title", "artist", "duration"},
+                new int[]{R.id.title, R.id.artist, R.id.duration});
+        mMusicList.setAdapter(mAdapter);
     }
 }
