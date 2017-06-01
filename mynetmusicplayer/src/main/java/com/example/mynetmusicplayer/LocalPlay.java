@@ -5,12 +5,15 @@ import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -48,6 +51,23 @@ public class LocalPlay extends AppCompatActivity {
     public List<Song> getSongList() {
         ContentResolver contentResolver = getContentResolver();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+//        this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+//                Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+
+        MediaScannerConnection.scanFile(this,
+                new String[] { Environment.getExternalStorageDirectory().toString() }
+                , null, new MediaScannerConnection.OnScanCompletedListener() {
+            /*
+             *   (non-Javadoc)
+             * @see android.media.MediaScannerConnection.OnScanCompletedListener#onScanCompleted(java.lang.String, android.net.Uri)
+             */
+            public void onScanCompleted(String path, Uri uri)
+            {
+                Log.i("ExternalStorage", "Scanned " + path + ":");
+                Log.i("ExternalStorage", "-> uri=" + uri);
+            }
+        });
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
 
         List<Song> songList = new ArrayList<>();
@@ -69,7 +89,8 @@ public class LocalPlay extends AppCompatActivity {
             int isMusic = cursor.getInt(cursor
                     .getColumnIndex(MediaStore.Audio.Media.IS_MUSIC));//是否为音乐
 
-            if (isMusic != 0 || true) {
+            if (true) {
+                song.setSongID(id);
                 song.setSongTitle(title);
                 song.setSongID(id);
                 song.setArtist(artist);

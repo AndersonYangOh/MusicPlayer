@@ -14,7 +14,7 @@ import android.webkit.WebViewClient;
  * Created by shush on 2017/5/31.
  */
 
-public   class WebViewClientXiami extends WebViewClient {
+public class WebViewClientXiami extends WebViewClient {
     private static String songURL;
     private static String songName;
 
@@ -42,6 +42,7 @@ public   class WebViewClientXiami extends WebViewClient {
         });
         super.onPageFinished(view, url);
     }
+
     public static String decodeUnicode(String theString) {
 
         char aChar;
@@ -50,7 +51,7 @@ public   class WebViewClientXiami extends WebViewClient {
 
         StringBuffer outBuffer = new StringBuffer(len);
 
-        for (int x = 0; x < len;) {
+        for (int x = 0; x < len; ) {
 
             aChar = theString.charAt(x++);
 
@@ -138,6 +139,7 @@ public   class WebViewClientXiami extends WebViewClient {
         return outBuffer.toString();
 
     }
+
     @SuppressLint("NewApi")
     @Override
     public WebResourceResponse shouldInterceptRequest(final WebView view,
@@ -155,7 +157,6 @@ public   class WebViewClientXiami extends WebViewClient {
                                 @Override
                                 public void onReceiveValue(String value) {
                                     if (value != null && !value.equals("null")) {
-
                                         songName = value.replace("\\n", "-").replace("\"", "");
                                         songName = songName.substring(0, songName.length() - 1);
                                     }
@@ -210,17 +211,10 @@ public   class WebViewClientXiami extends WebViewClient {
                                 @Override
                                 public void onReceiveValue(String value) {
                                     if (value != null && !value.equals("null")) {
-                                        String str = null;
-                                        try {
-                                            str = decodeUnicode(value.toString());
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        songName = str.replace("\\n", "-").replace("\"", "");
+                                        songName = value.replace("\\n", "-").replace("\"", "");
+                                        songName = decodeUnicode(songName);
                                         songName = songName.substring(0, songName.length() - 1);
                                     }
-
-
                                 }
                             });
                 }
@@ -240,7 +234,6 @@ public   class WebViewClientXiami extends WebViewClient {
                                     //如果value不等于空，则说明出现了J_dialogTips，即点击了下载
                                     //调用下载方法
                                     if (!value.equals("null") && songURL != null) {
-                                        //System.out.println(songURL);
                                         PlaceholderFragment placeholderFragment = new PlaceholderFragment();
                                         placeholderFragment.downSong(songURL, songName);
 
