@@ -10,7 +10,6 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.example.mynetmusicplayer.MainActivity;
 import com.example.mynetmusicplayer.R;
@@ -109,37 +108,4 @@ public class PlayerService extends Service {
         }
     }
 
-    public void nextMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            try {
-                mediaPlayer.reset();
-                //mediaPlayer.setDataSource(musicDir[musicIndex+1]);
-                // musicIndex++;
-                mediaPlayer.prepare();
-                mediaPlayer.seekTo(0);
-                mediaPlayer.start();
-            } catch (Exception e) {
-                Log.d("hint", "can't jump next music");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void preMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            try {
-                mediaPlayer.reset();
-//                mediaPlayer.setDataSource(musicDir[musicIndex-1]);
-//                musicIndex--;
-                mediaPlayer.prepare();
-                mediaPlayer.seekTo(0);
-                mediaPlayer.start();
-            } catch (Exception e) {
-                Log.d("hint", "can't jump pre music");
-                e.printStackTrace();
-            }
-        }
-    }
 }

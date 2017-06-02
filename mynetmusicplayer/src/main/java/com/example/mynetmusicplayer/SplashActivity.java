@@ -23,7 +23,7 @@ public class SplashActivity extends AppCompatActivity {
         Animation anim=null;
         anim=new RotateAnimation(0.f,+360.0f,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
         anim.setInterpolator(new AccelerateDecelerateInterpolator());
-        anim.setDuration(2000);
+        anim.setDuration(1700);
         findViewById(R.id.profile_image).startAnimation(anim);
 
         new Handler().postDelayed(new Runnable() {
@@ -34,6 +34,6 @@ public class SplashActivity extends AppCompatActivity {
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
                 finish();
             }
-        }, 2500);
+        }, 2000);
     }
 }

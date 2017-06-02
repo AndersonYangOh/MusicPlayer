@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,8 +15,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.example.mynetmusicplayer.service.PlayerService;
 import com.example.mynetmusicplayer.utils.Song;
@@ -26,12 +29,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.example.mynetmusicplayer.service.PlayerService.mediaPlayer;
+
 public class LocalPlay extends AppCompatActivity {
 
-    private static final int PLAY_MSG = 0;
-    private int ISPLAYING = 0; // 0播放，1暂停
-    private int currentPosition = -1 ;  //当前播放的歌曲ID
-
+    private static int ISPLAYING = 1; // 0播放，1暂停
+    private static int currentPosition = -1;  //当前播放的歌曲ID
     PlayerService musicService;
     SimpleAdapter mAdapter;
     ListView mMusicList;
@@ -39,14 +42,19 @@ public class LocalPlay extends AppCompatActivity {
     Song song;
     Intent intent;
     ImageButton ibPlay;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showCurrentSong();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_play);
         mMusicList = (ListView) findViewById(R.id.music_list);
         ibPlay = (ImageButton) findViewById(R.id.play_music);
-        ImageButton ibPre = (ImageButton) findViewById(R.id.previous_music);
-        ImageButton ibNext = (ImageButton) findViewById(R.id.next_music);
         mMusicList.setOnItemClickListener(new MusicListItemClickListener());
         musicService = new PlayerService();
 
@@ -118,6 +126,18 @@ public class LocalPlay extends AppCompatActivity {
     public void onclick(View view) {
         switch (view.getId()) {
             case R.id.play_music:
+                if (currentPosition == -1) {
+                    try {
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(
+                                songList.get(0).getUrl());
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    currentPosition =0 ;
+                }
+
                 musicService.playOrPause();
                 //更改图片
                 if (ISPLAYING == 1) {
@@ -129,42 +149,76 @@ public class LocalPlay extends AppCompatActivity {
                 }
                 break;
             case R.id.previous_music:
-                if (currentPosition-1 <= 0) {
+                if (currentPosition > 0) {
                     try {
-                        musicService.mediaPlayer.setDataSource(
+                        ISPLAYING = 0;
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(
                                 songList.get(currentPosition - 1).getUrl());
+                        currentPosition -= 1;
+                        mediaPlayer.prepare();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    musicService.mediaPlayer.reset();
-                    musicService.playOrPause();
+                    mediaPlayer.seekTo(0);
+                    mediaPlayer.start();
                 }
                 break;
             case R.id.next_music:
-                if (currentPosition+1 >= songList.size()){
+                if (currentPosition < songList.size() - 1) {
                     try {
-                        musicService.mediaPlayer.setDataSource(
-                                songList.get(currentPosition+1).getUrl());
+                        ISPLAYING = 0;
+                        musicService.playOrPause();
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(
+                                songList.get(currentPosition + 1).getUrl());
+                        currentPosition += 1;
+                        mediaPlayer.prepare();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
-                    musicService.mediaPlayer.reset();
-                    musicService.playOrPause();
+                    mediaPlayer.seekTo(0);
+                    mediaPlayer.start();
                 }
 
                 break;
             default:
                 break;
         }
+        showCurrentSong();
+    }
+    //设置当前播放的音乐的文本颜色
+    private void showCurrentSong(){
+        if (currentPosition != -1){
+            for (int i = 0; i < mMusicList.getChildCount(); i++) {
+                if (i == currentPosition){
+                    LinearLayout layout = (LinearLayout) mMusicList.getChildAt(currentPosition);
+                    TextView  text = (TextView) layout.findViewById(R.id.title);
+                    text.setTextColor(Color.parseColor("#FF4081"));
+                }else   {
+                    LinearLayout layout = (LinearLayout) mMusicList.getChildAt(i);
+                    TextView  text = (TextView) layout.findViewById(R.id.title);
+                    text.setTextColor(Color.parseColor("#66000000"));
+                }
+
+            }
+            if (ISPLAYING == 0) {
+                ibPlay.setBackgroundResource(R.drawable.pause_dark);
+            } else {
+                ibPlay.setBackgroundResource(R.drawable.play_dark);
+            }
+        }
+
     }
 
     //listview点击事件
     private class MusicListItemClickListener implements android.widget.AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
             if (mMusicList != null) {
-                if (currentPosition == -1){                 //第一次点击列表
+                if (currentPosition == -1) {                 //第一次点击列表
                     song = songList.get(position);
                     intent = new Intent(LocalPlay.this, PlayerService.class);
                     intent.putExtra("url", song.getUrl());
@@ -172,27 +226,24 @@ public class LocalPlay extends AppCompatActivity {
                     currentPosition = position;
                     ISPLAYING = 0;
                     ibPlay.setBackgroundResource(R.drawable.pause_dark);
-                }else if (currentPosition == position){  //点击了当前正在播放的歌曲
+                } else if (currentPosition == position) {  //点击了当前正在播放的歌曲
                     //更改图片
                     if (ISPLAYING == 1) {
-                        ibPlay.setBackgroundResource(R.drawable.pause_dark);
                         ISPLAYING = 0;
                         musicService.playOrPause();
                     } else {
-                        ibPlay.setBackgroundResource(R.drawable.play_dark);
                         ISPLAYING = 1;
                         musicService.playOrPause();
                     }
-                }else {                             //点击了非当前播放的歌曲
+                } else {                             //点击了非当前播放的歌曲
                     song = songList.get(position);
                     intent = new Intent(LocalPlay.this, PlayerService.class);
                     intent.putExtra("url", song.getUrl());
                     startService(intent);
                     currentPosition = position;
                     ISPLAYING = 0;
-                    ibPlay.setBackgroundResource(R.drawable.pause_dark);
                 }
-
+                showCurrentSong();
             }
         }
     }
