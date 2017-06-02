@@ -18,18 +18,11 @@
 
         <TextView
             android:id="@+id/duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="歌曲时长"
-            android:textSize="25sp" />
-
-        <TextView
-            android:id="@+id/size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="歌曲时长"
             android:gravity="end"
-            android:text="歌曲大小"
-            android:textAlignment="viewEnd"
             android:textSize="25sp" />
+
     </LinearLayout>
 </LinearLayout>

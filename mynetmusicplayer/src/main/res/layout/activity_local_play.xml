@@ -12,37 +12,46 @@
         android:id="@+id/music_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="70dp"></ListView>
+        android:layout_marginBottom="70dp">
+    </ListView>
 
-<android.support.v4.widget.ContentLoadingProgressBar
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <RelativeLayout
         android:id="@+id/handle_btnlayout"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
 
-        <Button
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
             android:id="@+id/previous_music"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:background="@drawable/left_dark" />
+            android:background="@drawable/left_dark"
+            android:onClick="onclick" />
 
 
-        <Button
+        <ImageButton
             android:id="@+id/play_music"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@drawable/play_dark" />
+            android:background="@drawable/play_dark"
+            android:onClick="onclick" />
 
-        <Button
+        <ImageButton
             android:id="@+id/next_music"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="@drawable/right_dark" />
+            android:background="@drawable/right_dark"
+            android:onClick="onclick" />
     </RelativeLayout>
 </RelativeLayout>
