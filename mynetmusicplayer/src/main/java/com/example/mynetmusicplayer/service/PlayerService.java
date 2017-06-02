@@ -88,7 +88,7 @@ public class PlayerService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void playOrPause() {
+    public static  void playOrPause() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         } else {

@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
@@ -28,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.example.mynetmusicplayer.service.PlayerService.mediaPlayer;
 
@@ -35,13 +38,13 @@ public class LocalPlay extends AppCompatActivity {
 
     private static int ISPLAYING = 1; // 0播放，1暂停
     private static int currentPosition = -1;  //当前播放的歌曲ID
-    PlayerService musicService;
     SimpleAdapter mAdapter;
     ListView mMusicList;
     public static List<Song> songList;
     Song song;
     Intent intent;
     ImageButton ibPlay;
+    SeekBar mSeekBar;
 
     @Override
     protected void onResume() {
@@ -56,8 +59,25 @@ public class LocalPlay extends AppCompatActivity {
         mMusicList = (ListView) findViewById(R.id.music_list);
         ibPlay = (ImageButton) findViewById(R.id.play_music);
         mMusicList.setOnItemClickListener(new MusicListItemClickListener());
-        musicService = new PlayerService();
 
+        mSeekBar = (SeekBar) this.findViewById(R.id.seekBar);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser)
+                    mediaPlayer.seekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         //运行时申请权限
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -69,6 +89,19 @@ public class LocalPlay extends AppCompatActivity {
             setListAdapter(songList);
         }
 
+    }
+
+    private void setSeekBar() {
+
+        mSeekBar.setMax(mediaPlayer.getDuration());
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mSeekBar.setProgress(mediaPlayer.getCurrentPosition());
+            }
+        };
+        timer.schedule(timerTask, 0, 1000);
     }
 
     //获取歌曲
@@ -135,10 +168,10 @@ public class LocalPlay extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    currentPosition =0 ;
+                    currentPosition = 0;
                 }
 
-                musicService.playOrPause();
+                PlayerService.playOrPause();
                 //更改图片
                 if (ISPLAYING == 1) {
                     ibPlay.setBackgroundResource(R.drawable.pause_dark);
@@ -168,7 +201,7 @@ public class LocalPlay extends AppCompatActivity {
                 if (currentPosition < songList.size() - 1) {
                     try {
                         ISPLAYING = 0;
-                        musicService.playOrPause();
+                        PlayerService.playOrPause();
                         mediaPlayer.reset();
                         mediaPlayer.setDataSource(
                                 songList.get(currentPosition + 1).getUrl());
@@ -187,18 +220,20 @@ public class LocalPlay extends AppCompatActivity {
                 break;
         }
         showCurrentSong();
+        setSeekBar();
     }
+
     //设置当前播放的音乐的文本颜色
-    private void showCurrentSong(){
-        if (currentPosition != -1){
+    private void showCurrentSong() {
+        if (currentPosition != -1) {
             for (int i = 0; i < mMusicList.getChildCount(); i++) {
-                if (i == currentPosition){
+                if (i == currentPosition) {
                     LinearLayout layout = (LinearLayout) mMusicList.getChildAt(currentPosition);
-                    TextView  text = (TextView) layout.findViewById(R.id.title);
+                    TextView text = (TextView) layout.findViewById(R.id.title);
                     text.setTextColor(Color.parseColor("#FF4081"));
-                }else   {
+                } else {
                     LinearLayout layout = (LinearLayout) mMusicList.getChildAt(i);
-                    TextView  text = (TextView) layout.findViewById(R.id.title);
+                    TextView text = (TextView) layout.findViewById(R.id.title);
                     text.setTextColor(Color.parseColor("#66000000"));
                 }
 
@@ -230,10 +265,10 @@ public class LocalPlay extends AppCompatActivity {
                     //更改图片
                     if (ISPLAYING == 1) {
                         ISPLAYING = 0;
-                        musicService.playOrPause();
+                        PlayerService.playOrPause();
                     } else {
                         ISPLAYING = 1;
-                        musicService.playOrPause();
+                        PlayerService.playOrPause();
                     }
                 } else {                             //点击了非当前播放的歌曲
                     song = songList.get(position);
@@ -244,6 +279,7 @@ public class LocalPlay extends AppCompatActivity {
                     ISPLAYING = 0;
                 }
                 showCurrentSong();
+                setSeekBar();
             }
         }
     }
