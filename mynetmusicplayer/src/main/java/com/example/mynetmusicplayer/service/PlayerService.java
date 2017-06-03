@@ -51,7 +51,7 @@ public class PlayerService extends Service {
                 .setContentTitle("This is content title")
                 .setContentText("This is content text")
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.my)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setContentIntent(pi)
                 .build();
@@ -61,6 +61,7 @@ public class PlayerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mediaPlayer != null) mediaPlayer.release();
     }
 
     @Override

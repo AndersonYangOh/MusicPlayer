@@ -21,9 +21,9 @@ public class WebViewClientQQ extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         view.loadUrl(url);
-        if (url.contains("androidqqmusic"))
-            return false;
-        return true;
+        if (url.contains("androidqqmusic://form=webpage"))
+            return true;
+        return false;
     }
 
     @SuppressLint("NewApi")
@@ -31,10 +31,10 @@ public class WebViewClientQQ extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
 
         view.loadUrl(request.getUrl().toString());
-        if (request.getUrl().toString().contains("androidqqmusic"))
-            return false;
+        if (request.getUrl().toString().contains("androidqqmusic://form=webpage"))
+            return true;
 
-        return true;
+        return false;
     }
 
     public void onPageStarted(final WebView view, String url, Bitmap favicon) {
@@ -88,20 +88,21 @@ public class WebViewClientQQ extends WebViewClient {
         if (request != null && request.getUrl() != null
                 && request.getMethod().equalsIgnoreCase("get")
                 && request.getUrl().toString().contains("androidqqmusic://form=webpage")) {
-
             view.post(new Runnable() {
                 @Override
                 public void run() {
                     PlaceholderFragment placeholderFragment = new PlaceholderFragment();
                     placeholderFragment.downSong(songURL, songName);
+
                 }
             });
 
 
         }
+        if (request.getUrl().toString().contains("ANDROID.DOWNSONG_DOWN.ANDROID")) {
+        }
+        return null;
 
-
-        return super.shouldInterceptRequest(view, request);
     }
 
     @Override
@@ -129,7 +130,7 @@ public class WebViewClientQQ extends WebViewClient {
         }
 
         //如果点击了下载
-        if (url != null && url.contains("androidqqmusic://form=webpage")) {
+        if (url != null && (url.contains("androidqqmusic://form=webpage"))) {
             view.post(new Runnable() {
                 @Override
                 public void run() {
@@ -138,6 +139,8 @@ public class WebViewClientQQ extends WebViewClient {
                 }
             });
 
+        }
+        if (url.contains("ANDROID.DOWNSONG_DOWN.ANDROID")) {
         }
         return null;
     }

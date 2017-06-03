@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -61,6 +62,7 @@ public class LocalPlay extends AppCompatActivity {
         mMusicList.setOnItemClickListener(new MusicListItemClickListener());
 
         mSeekBar = (SeekBar) this.findViewById(R.id.seekBar);
+        //实时设置seekBar进度
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -78,6 +80,45 @@ public class LocalPlay extends AppCompatActivity {
 
             }
         });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (currentPosition < songList.size() - 1){
+                    try {
+                        ISPLAYING = 0;
+                        PlayerService.playOrPause();
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(
+                                songList.get(currentPosition + 1).getUrl());
+                        currentPosition += 1;
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    mediaPlayer.seekTo(0);
+                    mediaPlayer.start();
+                }else  {
+                    try {
+                        ISPLAYING = 0;
+                        PlayerService.playOrPause();
+                        mediaPlayer.reset();
+                        mediaPlayer.setDataSource(
+                                songList.get(0).getUrl());
+                        currentPosition = 0;
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    mediaPlayer.seekTo(0);
+                    mediaPlayer.start();
+                }
+                showCurrentSong();
+                setSeekBar();
+            }
+        });
+
         //运行时申请权限
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -92,7 +133,6 @@ public class LocalPlay extends AppCompatActivity {
     }
 
     private void setSeekBar() {
-
         mSeekBar.setMax(mediaPlayer.getDuration());
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
@@ -101,7 +141,7 @@ public class LocalPlay extends AppCompatActivity {
                 mSeekBar.setProgress(mediaPlayer.getCurrentPosition());
             }
         };
-        timer.schedule(timerTask, 0, 1000);
+        timer.schedule(timerTask, 0, 500);
     }
 
     //获取歌曲
@@ -244,7 +284,6 @@ public class LocalPlay extends AppCompatActivity {
                 ibPlay.setBackgroundResource(R.drawable.play_dark);
             }
         }
-
     }
 
     //listview点击事件

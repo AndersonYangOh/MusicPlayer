@@ -152,7 +152,7 @@ public class WebViewClientXiami extends WebViewClient {
             view.post(new Runnable() {
                 @Override
                 public void run() {
-                    view.evaluateJavascript("javascript:document.getElementsByClassName('line current')[0].innerText"
+                    view.evaluateJavascript("javascript:document.getElementsByClassName('info')[0].innerText"
                             , new ValueCallback<String>() {
                                 @Override
                                 public void onReceiveValue(String value) {
@@ -206,7 +206,7 @@ public class WebViewClientXiami extends WebViewClient {
             view.post(new Runnable() {
                 @Override
                 public void run() {
-                    view.evaluateJavascript("javascript:document.getElementsByClassName('line current')[0].innerText"
+                    view.evaluateJavascript("javascript:document.getElementsByClassName('info')[0].innerText"
                             , new ValueCallback<String>() {
                                 @Override
                                 public void onReceiveValue(String value) {
