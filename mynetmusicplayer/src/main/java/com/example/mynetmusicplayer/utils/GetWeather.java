@@ -1,7 +1,5 @@
 package com.example.mynetmusicplayer.utils;
 
-import android.util.Log;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,7 +20,6 @@ public class GetWeather {
         try {
             String url = "http://e.weather.com.cn/d/town/index?lat=" + latitude + "&lon=" + longitude;
             Document doc = null;
-            Log.i("getWeather", url);
             doc = Jsoup.connect(url).get();
             Elements newsHeadlines = doc.select(".weather-two");
             for (Element element : newsHeadlines) {
@@ -32,7 +29,6 @@ public class GetWeather {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return ref;
 
     }

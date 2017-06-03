@@ -1,7 +1,6 @@
 package com.example.mynetmusicplayer;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.ValueCallback;
@@ -18,13 +17,31 @@ public class WebViewClientNTES extends WebViewClient {
     private static String songURL;
     private static String songName;
 
+    @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         view.loadUrl(url);
-        return true;
+        if (url.contains("orpheus:"))
+            view.goBack();
+        return false;
     }
 
-    public void onPageStarted(final WebView view, String url, Bitmap favicon) {
+    @SuppressLint("NewApi")
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
 
+        view.loadUrl(request.getUrl().toString());
+        if (request.getUrl().toString().contains("orpheus:")){
+            view.goBack();
+        }
+        return true;
+    }
+    @Override
+    public void onLoadResource(WebView view, String url) {
+        if(url.contains("orpheus:"))  {
+            view.stopLoading();
+            return;
+        }
+        super.onLoadResource(view, url);
     }
 
     @Override

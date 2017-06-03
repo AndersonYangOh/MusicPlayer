@@ -24,7 +24,7 @@ public class LocationUtils {
     private volatile static LocationUtils uniqueInstance;
     private LocationManager locationManager;
     private String locationProvider;
-    private Location location;
+    private static Location location;
     private Context mContext;
 
     private LocationUtils(Context context) {
@@ -72,7 +72,7 @@ public class LocationUtils {
             return;
         }
         //3.获取上次的位置，一般第一次运行，此值为null
-        Location location = locationManager.getLastKnownLocation(locationProvider);
+        location = locationManager.getLastKnownLocation(locationProvider);
         if (location!=null){
             setLocation(location);
         }
@@ -110,7 +110,8 @@ public class LocationUtils {
      * 参数：地理位置提供器、监听位置变化的时间间隔、位置变化的距离间隔、LocationListener监听器
      */
 
-    LocationListener locationListener = new LocationListener() {
+    LocationListener locationListener = new LocationListener()
+    {
 
         /**
          * 当某个位置提供者的状态发生改变时

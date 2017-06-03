@@ -1,7 +1,6 @@
 package com.example.mynetmusicplayer;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.ValueCallback;
@@ -22,7 +21,7 @@ public class WebViewClientQQ extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         view.loadUrl(url);
         if (url.contains("androidqqmusic://form=webpage"))
-            return true;
+            view.goBack();
         return false;
     }
 
@@ -31,14 +30,10 @@ public class WebViewClientQQ extends WebViewClient {
     public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
 
         view.loadUrl(request.getUrl().toString());
-        if (request.getUrl().toString().contains("androidqqmusic://form=webpage"))
-            return true;
-
-        return false;
-    }
-
-    public void onPageStarted(final WebView view, String url, Bitmap favicon) {
-
+        if (request.getUrl().toString().contains("androidqqmusic://form=webpage")){
+            view.goBack();
+        }
+        return true;
     }
 
     @Override
@@ -56,7 +51,14 @@ public class WebViewClientQQ extends WebViewClient {
         });
         super.onPageFinished(view, url);
     }
-
+    @Override
+    public void onLoadResource(WebView view, String url) {
+        if(url.contains("androidqqmusic://form=webpage"))  {
+            view.stopLoading();
+            return;
+        }
+        super.onLoadResource(view, url);
+    }
     @SuppressLint("NewApi")
     @Override
     public WebResourceResponse shouldInterceptRequest(final WebView view,
@@ -83,7 +85,16 @@ public class WebViewClientQQ extends WebViewClient {
                 }
             });
         }
-
+        //删除“下载榜单歌曲”
+        if(request.getUrl().toString().contains("y.qq.com/w/toplist.html")) {
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    view.evaluateJavascript("javascript:document.getElementsByClassName('wrap')[0].removeChild(document.getElementsByClassName('mod_bottom_tips c_bg1')[0])"
+                            , null);
+                }
+            });
+        }
         //如果点击了下载
         if (request != null && request.getUrl() != null
                 && request.getMethod().equalsIgnoreCase("get")
@@ -93,10 +104,8 @@ public class WebViewClientQQ extends WebViewClient {
                 public void run() {
                     PlaceholderFragment placeholderFragment = new PlaceholderFragment();
                     placeholderFragment.downSong(songURL, songName);
-
                 }
             });
-
 
         }
         if (request.getUrl().toString().contains("ANDROID.DOWNSONG_DOWN.ANDROID")) {
@@ -104,6 +113,8 @@ public class WebViewClientQQ extends WebViewClient {
         return null;
 
     }
+
+
 
     @Override
     public WebResourceResponse shouldInterceptRequest(final WebView view, String url) {
@@ -125,6 +136,16 @@ public class WebViewClientQQ extends WebViewClient {
 
                                 }
                             });
+                }
+            });
+        }
+        //删除“下载榜单歌曲”
+        if(url.contains("y.qq.com/w/toplist.html")) {
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    view.evaluateJavascript("javascript:document.getElementsByClassName('wrap')[0].removeChild(document.getElementsByClassName('mod_bottom_tips c_bg1')[0])"
+                            , null);
                 }
             });
         }
