@@ -43,6 +43,112 @@ public class WebViewClientXiami extends WebViewClient {
         super.onPageFinished(view, url);
     }
 
+    @SuppressLint("NewApi")
+    @Override
+    public WebResourceResponse shouldInterceptRequest(final WebView view,
+                                                      final WebResourceRequest request) {
+        //获取歌曲url
+        if (request != null && request.getUrl() != null
+                && request.getMethod().equalsIgnoreCase("get")
+                && request.getUrl().toString().contains("om5.alicdn.com")) {
+            songURL = request.getUrl().toString();
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    view.evaluateJavascript("javascript:document.getElementsByClassName('info')[0].innerText"
+                            , new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    if (value != null && !value.equals("null")) {
+                                        songName = value.replace("\\n", "-").replace("\"", "");
+                                        songName = songName.substring(0, songName.length() - 1);
+                                    }
+
+                                }
+                            });
+                }
+            });
+        }
+
+        //如果点击了下载
+        if (request != null && request.getUrl() != null
+                && request.getMethod().equalsIgnoreCase("get")
+                && request.getUrl().toString().contains("wgo.mmstat.com/xiamiwuxian")) {
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    view.evaluateJavascript("javascript:document.getElementsByTagName('body')[0].removeChild(document.getElementById('J_dialogTips'))"
+                            , new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    //System.out.println("webView返回的数据" + value);
+                                    //如果value不等于空，则说明出现了J_dialogTips，即点击了下载
+                                    //调用下载方法
+                                    if (!value.equals("null") && songURL != null) {
+                                        //System.out.println(songURL);
+                                        PlaceholderFragment placeholderFragment = new PlaceholderFragment();
+                                        placeholderFragment.downSong(songURL, songName);
+
+                                    }
+                                }
+                            });
+                }
+            });
+
+        }
+
+        return super.shouldInterceptRequest(view, request);
+    }
+
+    @Override
+    public WebResourceResponse shouldInterceptRequest(final WebView view, String url) {
+        if (!TextUtils.isEmpty(url) && Uri.parse(url).getScheme() != null
+                && url.contains("http://om5.alicdn.com")) {
+            songURL = url;
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    view.evaluateJavascript("javascript:document.getElementsByClassName('info')[0].innerText"
+                            , new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    if (value != null && !value.equals("null")) {
+                                        songName = value.replace("\\n", "-").replace("\"", "");
+                                        songName = decodeUnicode(songName);
+                                        songName = songName.substring(0, songName.length() - 1);
+                                    }
+                                }
+                            });
+                }
+            });
+        }
+
+        //如果点击了下载
+        if (url != null && url.contains("wgo.mmstat.com/xiamiwuxian")) {
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    view.evaluateJavascript("javascript:document.getElementsByTagName('body')[0].removeChild(document.getElementById('J_dialogTips'))"
+                            , new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    //System.out.println("webView返回的数据" + value);
+                                    //如果value不等于空，则说明出现了J_dialogTips，即点击了下载
+                                    //调用下载方法
+                                    if (!value.equals("null") && songURL != null) {
+                                        PlaceholderFragment placeholderFragment = new PlaceholderFragment();
+                                        placeholderFragment.downSong(songURL, songName);
+
+                                    }
+                                }
+                            });
+                }
+            });
+
+        }
+        return super.shouldInterceptRequest(view,url);
+    }
+
     public static String decodeUnicode(String theString) {
 
         char aChar;
@@ -138,113 +244,6 @@ public class WebViewClientXiami extends WebViewClient {
 
         return outBuffer.toString();
 
-    }
-
-    @SuppressLint("NewApi")
-    @Override
-    public WebResourceResponse shouldInterceptRequest(final WebView view,
-                                                      final WebResourceRequest request) {
-        //获取歌曲url
-        if (request != null && request.getUrl() != null
-                && request.getMethod().equalsIgnoreCase("get")
-                && request.getUrl().toString().contains("om5.alicdn.com")) {
-            songURL = request.getUrl().toString();
-            view.post(new Runnable() {
-                @Override
-                public void run() {
-                    view.evaluateJavascript("javascript:document.getElementsByClassName('info')[0].innerText"
-                            , new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    if (value != null && !value.equals("null")) {
-                                        songName = value.replace("\\n", "-").replace("\"", "");
-                                        songName = songName.substring(0, songName.length() - 1);
-                                    }
-
-                                }
-                            });
-                }
-            });
-        }
-
-        //如果点击了下载
-        if (request != null && request.getUrl() != null
-                && request.getMethod().equalsIgnoreCase("get")
-                && request.getUrl().toString().contains("wgo.mmstat.com/xiamiwuxian")) {
-            view.post(new Runnable() {
-                @Override
-                public void run() {
-                    view.evaluateJavascript("javascript:document.getElementsByTagName('body')[0].removeChild(document.getElementById('J_dialogTips'))"
-                            , new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    //System.out.println("webView返回的数据" + value);
-                                    //如果value不等于空，则说明出现了J_dialogTips，即点击了下载
-                                    //调用下载方法
-                                    if (!value.equals("null") && songURL != null) {
-                                        //System.out.println(songURL);
-                                        PlaceholderFragment placeholderFragment = new PlaceholderFragment();
-                                        placeholderFragment.downSong(songURL, songName);
-
-                                    }
-                                }
-                            });
-                }
-            });
-
-        }
-
-
-        return null;
-    }
-
-    @Override
-    public WebResourceResponse shouldInterceptRequest(final WebView view, String url) {
-        if (!TextUtils.isEmpty(url) && Uri.parse(url).getScheme() != null
-                && url.contains("http://om5.alicdn.com")) {
-            songURL = url;
-            view.post(new Runnable() {
-                @Override
-                public void run() {
-                    view.evaluateJavascript("javascript:document.getElementsByClassName('info')[0].innerText"
-                            , new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    if (value != null && !value.equals("null")) {
-                                        songName = value.replace("\\n", "-").replace("\"", "");
-                                        songName = decodeUnicode(songName);
-                                        songName = songName.substring(0, songName.length() - 1);
-                                    }
-                                }
-                            });
-                }
-            });
-        }
-
-        //如果点击了下载
-        if (url != null && url.contains("wgo.mmstat.com/xiamiwuxian")) {
-            view.post(new Runnable() {
-                @Override
-                public void run() {
-                    view.evaluateJavascript("javascript:document.getElementsByTagName('body')[0].removeChild(document.getElementById('J_dialogTips'))"
-                            , new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    //System.out.println("webView返回的数据" + value);
-                                    //如果value不等于空，则说明出现了J_dialogTips，即点击了下载
-                                    //调用下载方法
-                                    if (!value.equals("null") && songURL != null) {
-                                        PlaceholderFragment placeholderFragment = new PlaceholderFragment();
-                                        placeholderFragment.downSong(songURL, songName);
-
-                                    }
-                                }
-                            });
-                }
-            });
-
-        }
-        return null;
     }
 
 }

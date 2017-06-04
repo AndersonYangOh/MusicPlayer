@@ -57,6 +57,7 @@ public class PlaceholderFragment extends Fragment {
         mWebview.requestFocus();
         mWebview.getSettings().setLoadWithOverviewMode(true);
         mWebview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        mWebview.getSettings().setLoadsImagesAutomatically(true);
 
         mWebview.setOnKeyListener(new View.OnKeyListener() {
             @Override
