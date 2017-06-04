@@ -1,16 +1,22 @@
 package com.example.mynetmusicplayer;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -18,10 +24,12 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.example.mynetmusicplayer.receiver.NotificationBroadcastReceiver;
 import com.example.mynetmusicplayer.service.PlayerService;
 import com.example.mynetmusicplayer.utils.Song;
 
@@ -39,6 +47,7 @@ public class LocalPlay extends AppCompatActivity {
 
     private static int ISPLAYING = 1; // 0播放，1暂停
     private static int currentPosition = -1;  //当前播放的歌曲ID
+    private static String currentSongName = "";
     SimpleAdapter mAdapter;
     ListView mMusicList;
     public static List<Song> songList;
@@ -47,10 +56,15 @@ public class LocalPlay extends AppCompatActivity {
     ImageButton ibPlay;
     SeekBar mSeekBar;
 
+    private RemoteViews contentView;
+    NotificationManager manager;
+    private Notification notification;
+
+
     @Override
     protected void onResume() {
+        setCurrentSong();
         super.onResume();
-        showCurrentSong();
     }
 
     @Override
@@ -83,7 +97,7 @@ public class LocalPlay extends AppCompatActivity {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if (currentPosition < songList.size() - 1){
+                if (currentPosition < songList.size() - 1) {
                     try {
                         ISPLAYING = 0;
                         PlayerService.playOrPause();
@@ -98,7 +112,7 @@ public class LocalPlay extends AppCompatActivity {
 
                     mediaPlayer.seekTo(0);
                     mediaPlayer.start();
-                }else  {
+                } else {
                     try {
                         ISPLAYING = 0;
                         PlayerService.playOrPause();
@@ -114,7 +128,7 @@ public class LocalPlay extends AppCompatActivity {
                     mediaPlayer.seekTo(0);
                     mediaPlayer.start();
                 }
-                showCurrentSong();
+                setCurrentSong();
                 setSeekBar();
             }
         });
@@ -259,12 +273,12 @@ public class LocalPlay extends AppCompatActivity {
             default:
                 break;
         }
-        showCurrentSong();
+        setCurrentSong();
         setSeekBar();
     }
 
     //设置当前播放的音乐的文本颜色
-    private void showCurrentSong() {
+    private void setCurrentSong() {
         if (currentPosition != -1) {
             for (int i = 0; i < mMusicList.getChildCount(); i++) {
                 if (i == currentPosition) {
@@ -283,11 +297,16 @@ public class LocalPlay extends AppCompatActivity {
             } else {
                 ibPlay.setBackgroundResource(R.drawable.play_dark);
             }
+            initNotificationBar();
+            setSeekBar();
         }
+
+
     }
 
     //listview点击事件
-    private class MusicListItemClickListener implements android.widget.AdapterView.OnItemClickListener {
+    private class MusicListItemClickListener
+            implements android.widget.AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -317,10 +336,45 @@ public class LocalPlay extends AppCompatActivity {
                     currentPosition = position;
                     ISPLAYING = 0;
                 }
-                showCurrentSong();
+                setCurrentSong();
                 setSeekBar();
             }
         }
+    }
+
+    public void initNotificationBar() {
+        currentSongName = songList.get(currentPosition).getSongTitle();
+        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        //点击通知，打开播放页面
+        Intent playIntent = new Intent(this, LocalPlay.class);
+        PendingIntent playPendingIntent = PendingIntent.getActivity(this, 0,
+                playIntent, PendingIntent.FLAG_ONE_SHOT);
+        //滑动清除通知
+        Intent intentCancel = new Intent(this, NotificationBroadcastReceiver.class);
+        intentCancel.setAction("notification_cancelled");
+        PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(this, 0,
+                intentCancel, PendingIntent.FLAG_ONE_SHOT);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.my)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_round))
+                        .setContentTitle("正在播放歌曲")
+                        .setContentText(currentSongName)
+                        .setContentIntent(playPendingIntent)
+                        .setDeleteIntent(pendingIntentCancel);
+        Notification notification = mBuilder.build();
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(1, mBuilder.build());
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        clearNotify();
     }
 
     /**
@@ -347,5 +401,15 @@ public class LocalPlay extends AppCompatActivity {
             sec = "0000" + (time % (1000 * 60)) + "";
         }
         return min + ":" + sec.trim().substring(0, 2);
+    }
+
+    private void clearNotify() {
+        manager.cancelAll();
+    }
+
+    public static void stopMusic() {
+        PlayerService.stop();
+        currentPosition = -1;  //当前播放的歌曲ID
+        currentSongName = "";
     }
 }

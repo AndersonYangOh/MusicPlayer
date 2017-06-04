@@ -11,21 +11,21 @@
         android:textSize="28sp" />
 
     <ImageButton
-        android:id="@+id/previous_music"
+        android:id="@+id/previous_music_notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/left_dark"
         android:onClick="onclick" />
 
     <ImageButton
-        android:id="@+id/play_music"
+        android:id="@+id/play_music_notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/play_dark"
         android:onClick="onclick" />
 
     <ImageButton
-        android:id="@+id/next_music"
+        android:id="@+id/next_music_notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/right_dark"

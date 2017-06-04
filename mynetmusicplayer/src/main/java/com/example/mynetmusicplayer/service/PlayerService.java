@@ -1,18 +1,11 @@
 package com.example.mynetmusicplayer.service;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
-
-import com.example.mynetmusicplayer.MainActivity;
-import com.example.mynetmusicplayer.R;
 
 import java.io.IOException;
 
@@ -45,17 +38,17 @@ public class PlayerService extends Service {
 
         super.onCreate();
 
-        Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
-        Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("This is content title")
-                .setContentText("This is content text")
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.my)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setContentIntent(pi)
-                .build();
-        startForeground(1, notification);
+//        Intent intent = new Intent(this, MainActivity.class);
+//        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
+//        Notification notification = new NotificationCompat.Builder(this)
+//                .setContentTitle("This is content title")
+//                .setContentText("This is content text")
+//                .setWhen(System.currentTimeMillis())
+//                .setSmallIcon(R.drawable.my)
+//                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+//                .setContentIntent(pi)
+//                .build();
+//        startForeground(1, notification);
     }
 
     @Override
@@ -97,7 +90,7 @@ public class PlayerService extends Service {
         }
     }
 
-    public void stop() {
+    public static void stop() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             try {
